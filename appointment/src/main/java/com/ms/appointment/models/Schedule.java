@@ -1,8 +1,12 @@
 package com.ms.appointment.models;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,18 +20,19 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private long medicId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private boolean isAvailable;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
 
-    public Schedule() { 
+    public Schedule(Long long1, LocalDateTime localDateTime, LocalDateTime localDateTime2) { 
     }
 
-    public Schedule(long medicId, LocalDateTime startTime, LocalDateTime endTime) {
+    public Schedule(long medicId, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek) {
         setMedicId(medicId);
         setStartTime(startTime);
         setEndTime(endTime);
-        this.isAvailable = true;
+        setDayOfWeek(dayOfWeek);
     }
 
     public long getId() {
@@ -46,28 +51,29 @@ public class Schedule {
         this.medicId = medicId;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public DayOfWeek getDayOfWeek(){
+        return this.dayOfWeek;
     }
-
-    public void setAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+    public void setDayOfWeek(DayOfWeek day){
+        if(day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY)
+            throw new IllegalArgumentException("Invalid Day");
+        this.dayOfWeek = day;
     }
 
     

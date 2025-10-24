@@ -1,9 +1,11 @@
 package com.ms.appointment.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ms.appointment.dtos.ScheduleCreationDTO;
 import com.ms.appointment.models.Schedule;
 import com.ms.appointment.repository.ScheduleRepository;
 
@@ -12,27 +14,18 @@ public class ScheduleService{
 
     @Autowired
     private ScheduleRepository repository;
-    @Autowired
-    private MsPerfilService perfilService;
-
-    public Schedule createSchedule(ScheduleCreationDTO dto){
-
-        if(dto.startTime().isAfter(dto.endTime()) || dto.startTime().isEqual(dto.endTime())){
-            throw new IllegalArgumentException("Start Time or End Time invalid");
-        }
-
-        // 2. Validação Externa (Médico Existe) - VAMOS FAZER NA PRÓXIMA ETAPA!
-        if (!perfilService.validateMedicExists(dto.medicId())) {
-            throw new RuntimeException("Médico não encontrado no ms_perfil.");
-        }
-
-        Schedule schedule = new Schedule(
-            dto.medicId(),
-            dto.startTime(),
-            dto.endTime()
-        );
-
+    
+    public Schedule save(Schedule schedule){
         return repository.save(schedule);
+    }
 
+    public boolean isWithinSchedule(long medicId, LocalDateTime dateTime) {
+        DayOfWeek day = dateTime.getDayOfWeek();
+        Schedule schedule = repository.findByMedicIdAndDayOfWeek(medicId, day);
+
+        if (schedule == null) return false;
+
+        return !dateTime.toLocalTime().isBefore(schedule.getStartTime()) &&
+               !dateTime.toLocalTime().isAfter(schedule.getEndTime());
     }
 }
