@@ -1,32 +1,44 @@
 package com.ms.appointment.service;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class EntityManegementSystem {
 
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final String BASE_URL = "http://localhost:8080";
+    private final RestTemplate restTemplate;
+    private final String entityServiceUrl;
 
-    public boolean isPatientActive(long patient_id){
-        try {
-            ResponseEntity<Boolean> response = restTemplate.getForEntity(
-                BASE_URL + "patients" + patient_id, Boolean.class);
-            return Boolean.TRUE.equals(response.getBody());
-        } catch (Exception e) {
+    public EntityManegementSystem(RestTemplate restTemplate, @Value("${entity.service.url}") String entityServiceUrl){
+        this.restTemplate = restTemplate;
+        this.entityServiceUrl = entityServiceUrl;
+    }
+
+    public boolean patientExists(long patientId){
+        try{
+            restTemplate.getForEntity(
+                entityServiceUrl + "/patients/" + patientId,
+                Object.class
+                );
+            return true;
+        }
+        catch(HttpClientErrorException.NotFound e){
             return false;
         }
     }
 
-    public boolean isMedicActive(long medic_id){
+    public boolean medicExists(long medicId){
         try {
-            ResponseEntity<Boolean> response = restTemplate.getForEntity(
-                BASE_URL + "medics" + medic_id, Boolean.class);
-            return Boolean.TRUE.equals(response.getBody());
-        } catch (Exception e) {
+            restTemplate.getForEntity(
+                entityServiceUrl + "/medics/" + medicId,
+                Object.class
+                );   
+            return true;
+        } catch (HttpClientErrorException.NotFound e) {
+
             return false;
         }
     }

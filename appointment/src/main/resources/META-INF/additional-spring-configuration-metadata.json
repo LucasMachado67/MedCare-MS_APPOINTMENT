@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "app.services.perfil.url",
-  "type": "java.lang.String",
-  "description": "A description for 'app.services.perfil.url'"
-}]}
+{"properties": [
+  {
+    "name": "app.services.perfil.url",
+    "type": "java.lang.String",
+    "description": "A description for 'app.services.perfil.url'"
+  },
+  {
+    "name": "entity.service.url",
+    "type": "java.lang.String",
+    "description": "A description for 'entity.service.url'"
+  }
+]}

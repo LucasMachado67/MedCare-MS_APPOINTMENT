@@ -3,25 +3,25 @@ package com.ms.appointment.dtos;
 import java.time.LocalDateTime;
 
 public class AppointmentRequestDTO {
-
-    private long patient_id;
-    private long medic_id;
+    
+    private long patientId;
+    private long medicId;
     private LocalDateTime dateTime;
     private String observation;
     private String room;
 
     
-    public long getPatient_id() {
-        return patient_id;
+    public long getPatientId() {
+        return patientId;
     }
-    public void setPatient_id(long patient_id) {
-        this.patient_id = patient_id;
+    public void setPatientId(long patientId) {
+        this.patientId = patientId;
     }
-    public long getMedic_id() {
-        return medic_id;
+    public long getMedicId() {
+        return medicId;
     }
-    public void setMedic_id(long medic_id) {
-        this.medic_id = medic_id;
+    public void setMedicId(long medicId) {
+        this.medicId = medicId;
     }
     public LocalDateTime getDateTime() {
         return dateTime;

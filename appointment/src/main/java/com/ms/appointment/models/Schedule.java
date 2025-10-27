@@ -1,7 +1,6 @@
 package com.ms.appointment.models;
 
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
@@ -25,14 +24,13 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
 
-    public Schedule(Long long1, LocalDateTime localDateTime, LocalDateTime localDateTime2) { 
-    }
+    public Schedule(){}
 
     public Schedule(long medicId, LocalTime startTime, LocalTime endTime, DayOfWeek dayOfWeek) {
         setMedicId(medicId);
+        setDayOfWeek(dayOfWeek);
         setStartTime(startTime);
         setEndTime(endTime);
-        setDayOfWeek(dayOfWeek);
     }
 
     public long getId() {

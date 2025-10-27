@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.ms.appointment.enums.AppointmentStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,8 +22,10 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private long medic_id;
-    private long patient_id;
+    @Column(name = "medic_id")
+    private long medicId;
+    @Column(name = "patient_id")
+    private long patientId;
     private LocalDateTime date;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
@@ -64,16 +67,16 @@ public class Appointment {
         this.id = id;
     }
     public long getMedicId() {
-        return medic_id;
+        return medicId;
     }
-    public void setMedicId(long medic_id) {
-        this.medic_id = medic_id;
+    public void setMedicId(long medicId) {
+        this.medicId = medicId;
     }
     public long getPatientId() {
-        return patient_id;
+        return patientId;
     }
-    public void setPatientId(long patient_id) {
-        this.patient_id = patient_id;
+    public void setPatientId(long patientId) {
+        this.patientId = patientId;
     }
     public LocalDateTime getDate() {
         return date;
@@ -110,21 +113,6 @@ public class Appointment {
         this.observation = observation;
     }
 
-    public long getMedic_id() {
-        return medic_id;
-    }
-
-    public void setMedic_id(long medic_id) {
-        this.medic_id = medic_id;
-    }
-
-    public long getPatient_id() {
-        return patient_id;
-    }
-
-    public void setPatient_id(long patient_id) {
-        this.patient_id = patient_id;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
