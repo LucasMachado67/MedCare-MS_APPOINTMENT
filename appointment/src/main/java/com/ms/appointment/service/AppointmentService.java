@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ms.appointment.dtos.AppointmentRequestDTO;
+import com.ms.appointment.dtos.PersonDto;
 import com.ms.appointment.enums.AppointmentStatus;
 import com.ms.appointment.models.Appointment;
+import com.ms.appointment.producer.AppointmentProducer;
 import com.ms.appointment.repository.AppointmentRepository;
 
 @Service
@@ -21,9 +23,11 @@ public class AppointmentService {
     private EntityManegementSystem entityClient;
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private AppointmentProducer appointmentProducer;
 
     @Transactional
-    public Appointment createAppointment(AppointmentRequestDTO dto){
+    public Appointment createAppointment(AppointmentRequestDTO dto) throws Exception{
         
         // 1- Verifica se paciente e médico existem e estão ativos
         if (!entityClient.patientExists(dto.getPatientId()))
@@ -52,7 +56,13 @@ public class AppointmentService {
         appointment.setObservation(dto.getObservation());
         appointment.setRoom(dto.getRoom());
 
+        // 5. Notificacao via e-mail para patient
+        PersonDto patientDto = entityClient.findPersonByIdToSendEmail(dto.getPatientId());
+        
+        appointmentProducer.publishAppointentCreated(patientDto, appointment);
+
         return repository.save(appointment);
+
     }
 
     public List<Appointment> findByPatient(long id){
@@ -108,6 +118,11 @@ public class AppointmentService {
         existing.setObservation(dto.getObservation());
         existing.setStatus(AppointmentStatus.SCHEDULED);
         existing.setRoom(dto.getRoom());
+
+        // 5. Notificacao via e-mail para patient
+        PersonDto patientDto = entityClient.findPersonByIdToSendEmail(dto.getPatientId());
+        
+        appointmentProducer.publishAppointentCreated(patientDto, existing);
 
         return repository.save(existing);
     }

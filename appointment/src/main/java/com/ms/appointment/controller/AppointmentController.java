@@ -28,7 +28,7 @@ public class AppointmentController {
     private AppointmentService service;
 
     @PostMapping()
-    public ResponseEntity<Appointment> create(@RequestBody AppointmentRequestDTO dto){
+    public ResponseEntity<Appointment> create(@RequestBody AppointmentRequestDTO dto) throws Exception{
         Appointment created = service.createAppointment(dto);
         return ResponseEntity.ok(created);
     }
