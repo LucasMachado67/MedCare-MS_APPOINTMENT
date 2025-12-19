@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.7</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.5.8</version>
+		<relativePath/> 
 	</parent>
 	<groupId>com.ms</groupId>
 	<artifactId>appointment</artifactId>
@@ -126,8 +126,7 @@
 			</plugin>
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version> <configuration>
+                <artifactId>maven-compiler-plugin</artifactId> <configuration>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>
