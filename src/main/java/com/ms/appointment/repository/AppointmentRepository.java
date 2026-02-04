@@ -14,7 +14,7 @@ import com.ms.appointment.models.Appointment;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long>{
 
     @Query("SELECT a FROM Appointment a WHERE a.medicId = :medicId AND " +
-        "a.date BETWEEN :start AND :end AND a.status = 'SCHEDULED'")
+        "a.dateTime BETWEEN :start AND :end AND a.status = 'SCHEDULED'")
     List<Appointment> findConflicts(@Param("medicId") long medicId, LocalDateTime start, LocalDateTime end);
     
 

@@ -1,5 +1,8 @@
 package com.ms.appointment.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,44 +19,64 @@ public class AppointmentProducer {
 
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private SqsTemplate sqsTemplate;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @Value(value = "${broker.queue.email.name}")//Default exchange type
-    private String routingKey;
+    //Nome da fila da Amazon SQS
+    @Value(value = "${medcare.aws.sqs.queue.notification.email}")
+    private String notificationQueue;
 
-    public void publishAppointentCreated(PersonDto personDto, Appointment appointment){
-        var emailDto = new EmailDto();
-        
-         emailDto.setEmailTo(personDto.getEmail());
-         emailDto.setSubject("Nova consulta agendada");
-         emailDto.setText("Nome: " + personDto.getNome() +
-                "\nEmail: " + personDto.getEmail() +
-                "\n----------------------------------" +
-                "\nData: " + appointment.getDate() +
-                "\nRoom: " + appointment.getRoom() +
-                "\nObservation: " + appointment.getObservation());
-        
-            
+    public void publishAppointmentCreated(PersonDto personDto, Appointment appointment) throws JsonProcessingException {
+        try{
+            var emailDto = new EmailDto();
 
-        rabbitTemplate.convertAndSend("", routingKey, emailDto);
+            emailDto.setEmailTo(personDto.getEmail());
+            emailDto.setSubject("Nova consulta agendada");
+            emailDto.setText("Nome: " + personDto.getNome() +
+                    "\nEmail: " + personDto.getEmail() +
+                    "\n----------------------------------" +
+                    "\nData: " + appointment.getDateTime() +
+                    "\nRoom: " + appointment.getRoom() +
+                    "\nObservation: " + appointment.getObservation());
+
+            String json = objectMapper.writeValueAsString(emailDto);
+
+            sqsTemplate.send(to -> to
+                    .queue(notificationQueue)
+                    .payload(json));
+            System.out.println("Message of appointment created sent");
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+
     }
 
-    public void publishAppointentUpdated(PersonDto personDto, Appointment appointment){
-        var emailDto = new EmailDto();
-        
-         emailDto.setEmailTo(personDto.getEmail());
-         emailDto.setSubject("Consulta Atualizada");
-         emailDto.setText("Nome: " + personDto.getNome() +
-                "\nEmail: " + personDto.getEmail() +
-                "\n----------------------------------" +
-                "\nSTATUS: " + appointment.getStatus() + 
-                "\n----------------------------------" +
-                "\nData: " + appointment.getDate() +
-                "\nRoom: " + appointment.getRoom() +
-                "\nObservation: " + appointment.getObservation());
-        
-            
+    public void publishAppointmentUpdated(PersonDto personDto, Appointment appointment) throws JsonProcessingException {
+        try{
+            var emailDto = new EmailDto();
 
-        rabbitTemplate.convertAndSend("", routingKey, emailDto);
+            emailDto.setEmailTo(personDto.getEmail());
+            emailDto.setSubject("Consulta Atualizada");
+            emailDto.setText("Nome: " + personDto.getNome() +
+                    "\nEmail: " + personDto.getEmail() +
+                    "\n----------------------------------" +
+                    "\nSTATUS: " + appointment.getStatus() +
+                    "\n----------------------------------" +
+                    "\nData: " + appointment.getDateTime() +
+                    "\nRoom: " + appointment.getRoom() +
+                    "\nObservation: " + appointment.getObservation());
+
+            String json = objectMapper.writeValueAsString(emailDto);
+
+            sqsTemplate.send(to -> to
+                    .queue(notificationQueue)
+                    .payload(json));
+            System.out.println("Message of appointment updated sent");
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
     }
 }

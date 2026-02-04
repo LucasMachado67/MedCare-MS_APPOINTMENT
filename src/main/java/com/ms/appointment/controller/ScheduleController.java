@@ -1,5 +1,6 @@
 package com.ms.appointment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("schedules")
+@RequestMapping("schedule")
 public class ScheduleController {
 
 
     @Autowired
     private ScheduleService service;
 
-    @PostMapping()
-    public ResponseEntity<Schedule> create(@RequestBody Schedule schedule) {
+    @PostMapping("/create")
+    public ResponseEntity<Schedule> create(@RequestBody Schedule schedule) throws JsonProcessingException {
         return ResponseEntity.ok(service.save(schedule));
     }
     

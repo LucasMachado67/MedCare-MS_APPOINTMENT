@@ -26,7 +26,7 @@ public class Appointment {
     private long medicId;
     @Column(name = "patient_id")
     private long patientId;
-    private LocalDateTime date;
+    private LocalDateTime dateTime;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
     private int duration;
@@ -50,10 +50,10 @@ public class Appointment {
 
     public Appointment(){}
 
-    public Appointment(long medic_id, long patient_id, LocalDateTime date, int duration, String room, String observation) {
+    public Appointment(long medic_id, long patient_id, LocalDateTime dateTime, int duration, String room, String observation) {
         setMedicId(medic_id);
         setPatientId(patient_id);
-        setDate(date);
+        setDateTime(dateTime);
         this.status = AppointmentStatus.SCHEDULED;
         setDuration(duration);
         setRoom(room);
@@ -78,11 +78,11 @@ public class Appointment {
     public void setPatientId(long patientId) {
         this.patientId = patientId;
     }
-    public LocalDateTime getDate() {
-        return date;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
     public AppointmentStatus getStatus() {
         return status;
