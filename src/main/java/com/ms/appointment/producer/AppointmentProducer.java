@@ -3,7 +3,6 @@ package com.ms.appointment.producer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -36,7 +35,7 @@ public class AppointmentProducer {
             emailDto.setText("Nome: " + personDto.getNome() +
                     "\nEmail: " + personDto.getEmail() +
                     "\n----------------------------------" +
-                    "\nData: " + appointment.getDateTime() +
+                    "\nData: " + appointment.getStartTime() + "/" + appointment.getEndTime() +
                     "\nRoom: " + appointment.getRoom() +
                     "\nObservation: " + appointment.getObservation());
 
@@ -64,7 +63,7 @@ public class AppointmentProducer {
                     "\n----------------------------------" +
                     "\nSTATUS: " + appointment.getStatus() +
                     "\n----------------------------------" +
-                    "\nData: " + appointment.getDateTime() +
+                    "\nData: " + appointment.getStartTime() + "/" + appointment.getEndTime() +
                     "\nRoom: " + appointment.getRoom() +
                     "\nObservation: " + appointment.getObservation());
 

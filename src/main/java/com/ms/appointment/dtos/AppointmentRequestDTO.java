@@ -6,11 +6,25 @@ public class AppointmentRequestDTO {
     
     private long patientId;
     private long medicId;
-    private LocalDateTime dateTime;
+    private LocalDateTime starTime;
+    private LocalDateTime endTime;
     private String observation;
     private String room;
 
+
     
+    public LocalDateTime getStarTime() {
+        return starTime;
+    }
+    public void setStarTime(LocalDateTime starTime) {
+        this.starTime = starTime;
+    }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
     public long getPatientId() {
         return patientId;
     }
@@ -22,12 +36,6 @@ public class AppointmentRequestDTO {
     }
     public void setMedicId(long medicId) {
         this.medicId = medicId;
-    }
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
     }
     public String getObservation() {
         return observation;

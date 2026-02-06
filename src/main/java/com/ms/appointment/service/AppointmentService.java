@@ -37,23 +37,35 @@ public class AppointmentService {
         if (!entityClient.patientExists(dto.getPatientId()))
             throw new IllegalArgumentException("Patient not found");
 
+        if(dto.getStarTime().isBefore(LocalDateTime.now().minusSeconds(10)))
+            throw new IllegalArgumentException("Hour selected is invalid");
+            //Lembrar de quando tiver acesso ao banco colocar isso para evitar overlapping ALTER TABLE appointment
+            // ADD CONSTRAINT no_overlap
+            // EXCLUDE USING gist (
+            //     medic_id WITH =,
+            //     tstzrange(start_time, end_time) WITH &&
+            // )
+            // WHERE (status = 'SCHEDULED');
+        if(dto.getStarTime().isEqual(dto.getEndTime()) || dto.getStarTime().isAfter(dto.getEndTime()))
+            throw new IllegalArgumentException("Hour selected is invalid");
+
         // Verifica se o médico possui agenda configurada neste horário
-        if (!scheduleService.isWithinSchedule(dto.getMedicId(), dto.getDateTime()))
-            throw new IllegalArgumentException("Médico não possui horário configurado para essa data/hora");
+        if (!scheduleService.isWithinSchedule(dto.getMedicId(), dto.getStarTime(), dto.getEndTime()))
+            throw new IllegalArgumentException("Medic does not have schedule configured for the selected time");
 
         // 3️- Verifica se já existe outro agendamento nesse horário
-        LocalDateTime start = dto.getDateTime();
-        LocalDateTime end = start.plusMinutes(30);
-        List<Appointment> conflicts = repository.findConflicts(dto.getMedicId(), start, end);
 
-        if (!conflicts.isEmpty())
-            throw new IllegalArgumentException("Horário já ocupado");
+        boolean hasConflicts = repository.existsConflict(dto.getMedicId(), dto.getStarTime(), dto.getEndTime());
+
+        if (hasConflicts)
+            throw new IllegalArgumentException("Medic does not have schedule configured for the selected time");
 
         // 4️- Cria a consulta
         Appointment appointment = new Appointment();
         appointment.setPatientId(dto.getPatientId());
         appointment.setMedicId(dto.getMedicId());
-        appointment.setDateTime(dto.getDateTime());
+        appointment.setStartTime(dto.getStarTime());
+        appointment.setEndTime(dto.getEndTime());
         appointment.setObservation(dto.getObservation());
         appointment.setRoom(dto.getRoom());
 
@@ -71,22 +83,19 @@ public class AppointmentService {
     public List<Appointment> findByPatient(long id){
         List<Appointment> foundAppointments = repository.findByPatientId(id);
 
-        if(foundAppointments.isEmpty()){
-            throw new RuntimeException("No Appointment found this patient");
-        }else{
-            return foundAppointments;
-        }
+        if(foundAppointments.isEmpty())
+            System.out.println("No appointments found for this patient");
 
+        return foundAppointments;
     }
 
     public List<Appointment> findByMedic(long id){
         List<Appointment> foundAppointments = repository.findByMedicId(id);
 
-        if(foundAppointments.isEmpty()){
-            throw new RuntimeException("No Appointment found this Medic");
-        }else{
-            return foundAppointments;
-        }
+        if(foundAppointments.isEmpty())
+            System.out.println("No appointments found for this medic");
+
+        return foundAppointments;
 
     }
 
@@ -96,31 +105,32 @@ public class AppointmentService {
             Appointment existing = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-            if(existing.getStatus() == AppointmentStatus.CANCELED)
+            if(existing.getStatus() == AppointmentStatus.CANCELLED)
                 throw new IllegalArgumentException("Appointment already canceled, can not be updated");
 
             if (!entityClient.patientExists(dto.getPatientId()))
-                throw new IllegalArgumentException("Paciente não encontrado ou inativo");
+                throw new IllegalArgumentException("Pacient not found");
 
             if (!entityClient.medicExists(dto.getMedicId()))
-                throw new IllegalArgumentException("Médico não encontrado ou inativo");
+                throw new IllegalArgumentException("Medic not found");
 
-            if (!scheduleService.isWithinSchedule(dto.getMedicId(), dto.getDateTime()))
-                throw new IllegalArgumentException("Médico não possui horário configurado para essa data/hora");
+            if(dto.getStarTime().isBefore(LocalDateTime.now().minusSeconds(10)))
+                throw new IllegalArgumentException("Hour selected is invalid");
 
-            //Dando ‘update’ após passar em todas as verificações
-            LocalDateTime start = dto.getDateTime();
-            LocalDateTime end  = start.plusMinutes(30);
-            List<Appointment> conflicts = repository.findConflicts(dto.getMedicId(), start, end);
-            boolean hasConflict = conflicts.stream().anyMatch(a -> a.getId() != id);
+            if(dto.getStarTime().isEqual(dto.getEndTime()) || dto.getStarTime().isAfter(dto.getEndTime()))
+                throw new IllegalArgumentException("Hour selected is invalid");
 
-            //Ve se a agenda retorna um conflito com alguma outra já existente no horário
-            if(hasConflict)
+            if (!scheduleService.isWithinSchedule(dto.getMedicId(), dto.getStarTime(), dto.getEndTime()))
+                throw new IllegalArgumentException("Medic does not have schedule configured for the selected time");
+
+            if (repository.existsConflictExcludingId(dto.getMedicId(), dto.getStarTime(), dto.getEndTime(), id))
                 throw new IllegalArgumentException("Schedule already taken");
-
+            
+            //Dando ‘update’ após passar em todas as verificações
             existing.setMedicId(dto.getMedicId());
             existing.setPatientId(dto.getPatientId());
-            existing.setDateTime(dto.getDateTime());
+            existing.setStartTime(dto.getStarTime());
+            existing.setEndTime(dto.getEndTime());
             existing.setObservation(dto.getObservation());
             existing.setStatus(AppointmentStatus.SCHEDULED);
             existing.setRoom(dto.getRoom());
@@ -138,10 +148,10 @@ public class AppointmentService {
         Appointment existing = repository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
 
-        if(existing.getStatus() == AppointmentStatus.CANCELED)
-            throw new IllegalArgumentException("Appointment already canceled");
+        if(existing.getStatus() == AppointmentStatus.CANCELLED)
+            System.out.println("Appointment already cancelled");
 
-        existing.setStatus((AppointmentStatus.CANCELED));
+        existing.setStatus((AppointmentStatus.CANCELLED));
         repository.save(existing);
     }
 

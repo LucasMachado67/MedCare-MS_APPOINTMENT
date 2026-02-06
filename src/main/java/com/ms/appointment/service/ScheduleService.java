@@ -37,8 +37,8 @@ public class ScheduleService{
         return repository.save(schedule);
     }
     //Verifica se o horário já está preenchido
-    public boolean isWithinSchedule(long medicId, LocalDateTime dateTime) {
-        DayOfWeek day = dateTime.getDayOfWeek();
+    public boolean isWithinSchedule(long medicId, LocalDateTime startTime, LocalDateTime endTime) {
+        DayOfWeek day = startTime.getDayOfWeek();
         //Validacao se medico existe no service de entidades
         boolean medicExists = entityManegementSystem.medicExists(medicId);
 
@@ -50,7 +50,7 @@ public class ScheduleService{
 
         if (schedule == null) return false;
 
-        return !dateTime.toLocalTime().isBefore(schedule.getStartTime()) &&
-               !dateTime.toLocalTime().isAfter(schedule.getEndTime());
+        return !startTime.toLocalTime().isBefore(schedule.getStartTime()) &&
+               !endTime.toLocalTime().isAfter(schedule.getEndTime());
     }
 }

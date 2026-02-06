@@ -18,5 +18,20 @@
     "name": "broker.queue.email.name",
     "type": "java.lang.String",
     "description": "A description for 'broker.queue.email.name'"
+  },
+  {
+    "name": "spring.security.oauth2.resource.server.jwt.issuer-uri",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.security.oauth2.resource.server.jwt.issuer-uri'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "medcare.aws.sqs.queue.notification.email",
+    "type": "java.lang.String",
+    "description": "A description for 'medcare.aws.sqs.queue.notification.email'"
   }
 ]}

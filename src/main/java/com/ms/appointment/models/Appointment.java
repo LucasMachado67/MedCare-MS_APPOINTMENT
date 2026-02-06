@@ -26,7 +26,8 @@ public class Appointment {
     private long medicId;
     @Column(name = "patient_id")
     private long patientId;
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
     private int duration;
@@ -50,14 +51,15 @@ public class Appointment {
 
     public Appointment(){}
 
-    public Appointment(long medic_id, long patient_id, LocalDateTime dateTime, int duration, String room, String observation) {
+    public Appointment(long medic_id, long patient_id, LocalDateTime dateTime, int duration, String room, String observation, LocalDateTime startTime, LocalDateTime endTime) {
         setMedicId(medic_id);
         setPatientId(patient_id);
-        setDateTime(dateTime);
         this.status = AppointmentStatus.SCHEDULED;
         setDuration(duration);
         setRoom(room);
         setObservation(observation);
+        setStartTime(startTime);
+        setEndTime(endTime);
     }
 
     public long getId() {
@@ -77,12 +79,6 @@ public class Appointment {
     }
     public void setPatientId(long patientId) {
         this.patientId = patientId;
-    }
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
     }
     public AppointmentStatus getStatus() {
         return status;
@@ -128,6 +124,22 @@ public class Appointment {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     
