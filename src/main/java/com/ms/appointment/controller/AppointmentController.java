@@ -1,8 +1,10 @@
 package com.ms.appointment.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/appointment")
+@RequestMapping("appointment")
 public class AppointmentController {
 
 
@@ -29,10 +31,13 @@ public class AppointmentController {
     private AppointmentService service;
 
     //Cria um appointment
-    @PostMapping("create")
-    public ResponseEntity<Appointment> create(@RequestBody AppointmentRequestDTO dto) throws Exception{
+    @PostMapping("/create")
+    public ResponseEntity<Appointment> create(@Valid @RequestBody AppointmentRequestDTO dto) throws Exception{
         Appointment created = service.createAppointment(dto);
-        return ResponseEntity.ok(created);
+
+        URI location = URI.create("/appointment/" + created.getId());
+
+        return ResponseEntity.created(location).body(created);
     }
     //Localiza os appointments com o que o paciente possui
     @GetMapping("/patient/{id}")

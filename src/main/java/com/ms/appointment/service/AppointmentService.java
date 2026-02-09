@@ -38,7 +38,7 @@ public class AppointmentService {
             throw new IllegalArgumentException("Patient not found");
 
         if(dto.getStarTime().isBefore(LocalDateTime.now().minusSeconds(10)))
-            throw new IllegalArgumentException("Hour selected is invalid");
+            throw new IllegalArgumentException("Hour selected can not be in the past");
             //Lembrar de quando tiver acesso ao banco colocar isso para evitar overlapping ALTER TABLE appointment
             // ADD CONSTRAINT no_overlap
             // EXCLUDE USING gist (
@@ -47,7 +47,7 @@ public class AppointmentService {
             // )
             // WHERE (status = 'SCHEDULED');
         if(dto.getStarTime().isEqual(dto.getEndTime()) || dto.getStarTime().isAfter(dto.getEndTime()))
-            throw new IllegalArgumentException("Hour selected is invalid");
+            throw new IllegalArgumentException("StartTime can not be the same/lower than EndTime");
 
         // Verifica se o médico possui agenda configurada neste horário
         if (!scheduleService.isWithinSchedule(dto.getMedicId(), dto.getStarTime(), dto.getEndTime()))
