@@ -543,5 +543,5 @@ public class AppointmentServiceTest {
             assertEquals("Retorno", result.getObservation());
         }
     }
-
+    
 }
