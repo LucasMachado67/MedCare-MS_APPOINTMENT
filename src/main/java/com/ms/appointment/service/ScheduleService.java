@@ -18,29 +18,29 @@ public class ScheduleService{
     @Autowired
     private ScheduleRepository repository;
     @Autowired
-    private EntityManagementSystem entityManegementSystem;
+    private EntityManagementSystem entityManagementSystem;
     @Autowired
     private ScheduleProducer scheduleProducer;
 
     //Cria uma Schedule para o medic selecionado
     public Schedule save(Schedule schedule) throws JsonProcessingException {
-        boolean medicExists = entityManegementSystem.medicExists(schedule.getMedicId());
+        boolean medicExists = entityManagementSystem.medicExists(schedule.getMedicId());
 
         if(!medicExists){
             throw new IllegalArgumentException("Invalid medic ID");
         }
         //Pegando as informações do médico
-        PersonDto medicDto = entityManegementSystem.findPersonByIdToSendEmail(schedule.getMedicId());
+        PersonDto medicDto = entityManagementSystem.findPersonByIdToSendEmail(schedule.getMedicId());
         //Passando as informações para ser enviado e-mail para o médico
         scheduleProducer.publishScheduleCreated(medicDto, schedule);
 
         return repository.save(schedule);
     }
-    //Verifica se o horário já está preenchido
+    //Verifica se o horário está dentro do horário de trabalho do médico
     public boolean isWithinSchedule(long medicId, LocalDateTime startTime, LocalDateTime endTime) {
         DayOfWeek day = startTime.getDayOfWeek();
         //Validacao se medico existe no service de entidades
-        boolean medicExists = entityManegementSystem.medicExists(medicId);
+        boolean medicExists = entityManagementSystem.medicExists(medicId);
 
         if(!medicExists){
             return false;

@@ -1,14 +1,24 @@
 package com.ms.appointment.dtos;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 public class AppointmentRequestDTO {
-    
+
+    @NotNull
     private long patientId;
+    @NotNull
     private long medicId;
+    @NotNull
+    @Future
     private LocalDateTime starTime;
+    @NotNull
+    @Future
     private LocalDateTime endTime;
     private String observation;
+    @NotNull
     private String room;
 
 

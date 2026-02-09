@@ -148,7 +148,7 @@ public class AppointmentServiceTest {
             IllegalArgumentException exception = 
                 assertThrows(IllegalArgumentException.class, () -> service.createAppointment(appointmentDTO));
     
-            assertEquals("Hour selected is invalid", exception.getMessage());
+            assertEquals("Hour selected can not be in the past", exception.getMessage());
         }
     
         @Test
@@ -166,7 +166,7 @@ public class AppointmentServiceTest {
                     assertThrows(IllegalArgumentException.class,
                             () -> service.createAppointment(appointmentDTO));
     
-            assertEquals("Hour selected is invalid", exception.getMessage());
+            assertEquals("StartTime can not be the same/lower than EndTime", exception.getMessage());
         }
     
         @Test
@@ -185,7 +185,7 @@ public class AppointmentServiceTest {
                     assertThrows(IllegalArgumentException.class,
                             () -> service.createAppointment(appointmentDTO));
     
-            assertEquals("Hour selected is invalid", exception.getMessage());
+            assertEquals("StartTime can not be the same/lower than EndTime", exception.getMessage());
         }
     
     
@@ -330,7 +330,7 @@ public class AppointmentServiceTest {
             Appointment appointment = new Appointment();
             appointment.setId(1L);
     
-            when(repository.findById(1L))
+            when(repository.findById(appointment.getId()))
                     .thenReturn(Optional.empty());
             
             IllegalArgumentException exception = 
