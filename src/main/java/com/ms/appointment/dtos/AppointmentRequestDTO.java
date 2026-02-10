@@ -20,8 +20,6 @@ public class AppointmentRequestDTO {
     private String observation;
     @NotNull
     private String room;
-
-
     
     public LocalDateTime getStarTime() {
         return starTime;
@@ -59,6 +57,5 @@ public class AppointmentRequestDTO {
     public void setRoom(String room) {
         this.room = room;
     }
-
     
 }

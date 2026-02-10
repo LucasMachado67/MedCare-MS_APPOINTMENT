@@ -2,6 +2,7 @@ package com.ms.appointment.serviceTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ms.appointment.dtos.PersonDto;
+import com.ms.appointment.dtos.ScheduleCreationDTO;
 import com.ms.appointment.models.Schedule;
 import com.ms.appointment.producer.ScheduleProducer;
 import com.ms.appointment.repository.ScheduleRepository;
@@ -21,6 +22,7 @@ import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,9 +41,16 @@ public class ScheduleServiceTest {
     private ScheduleService service;
 
     Schedule schedule;
+    ScheduleCreationDTO dto;
 
     @BeforeEach
     void setup(){
+        
+        dto = new ScheduleCreationDTO();
+        dto.setMedicId(2L);
+        dto.setStartTime(LocalTime.parse("08:00:00"));
+        dto.setEndTime(LocalTime.parse("12:00:00"));
+        dto.setDayOfWeek(DayOfWeek.MONDAY);
 
         schedule = new Schedule();
         schedule.setId(1L);
@@ -68,15 +77,14 @@ public class ScheduleServiceTest {
             when(entityManagementSystem.findPersonByIdToSendEmail(schedule.getMedicId())).thenReturn(medicDto);
 
             doNothing().when(scheduleProducer)
-                    .publishScheduleCreated(medicDto, schedule);
+                    .publishScheduleCreated(any(), any());
 
             when(repository.save(any()))
                     .thenAnswer(inv -> inv.getArgument(0));
 
-            Schedule result = service.save(schedule);
+            Schedule result = service.save(dto);
 
             assertNotNull(result);
-            assertEquals(1, result.getId());
             assertEquals(2, result.getMedicId());
             assertEquals(DayOfWeek.MONDAY, result.getDayOfWeek());
         }
@@ -87,7 +95,7 @@ public class ScheduleServiceTest {
             when(entityManagementSystem.medicExists(2L)).thenReturn(false);
 
             IllegalArgumentException exception =
-                        assertThrows(IllegalArgumentException.class, () -> service.save(schedule));
+                        assertThrows(IllegalArgumentException.class, () -> service.save(dto));
 
             assertEquals("Invalid medic ID", exception.getMessage());
             verify(scheduleProducer, never()).publishScheduleCreated(any(), any());

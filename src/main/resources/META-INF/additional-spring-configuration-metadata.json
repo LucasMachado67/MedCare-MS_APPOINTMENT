@@ -33,5 +33,10 @@
     "name": "medcare.aws.sqs.queue.notification.email",
     "type": "java.lang.String",
     "description": "A description for 'medcare.aws.sqs.queue.notification.email'"
+  },
+  {
+    "name": "api.security.token.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'api.security.token.secret'"
   }
 ]}
